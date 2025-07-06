@@ -160,6 +160,7 @@ files=(
     "hostname.exe"
     "mshta.exe"
     "ping.exe"
+    "choice.exe"
 )
 
 # Copy specific files to system32

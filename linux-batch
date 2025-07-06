@@ -196,7 +196,8 @@ echo -e """${BLUE}
 ###############################
 ${RESET}"""
 
-curl -# -o install_pwshwrapper.exe https://github.com/PietJankbal/powershell-wrapper-for-wine/raw/refs/heads/master/install_pwshwrapper.exe
+curl -# -o install_pwshwrapper.exe \
+  https://raw.githubusercontent.com/PietJankbal/powershell-wrapper-for-wine/master/install_pwshwrapper.exe
 
 wine install_pwshwrapper.exe
 

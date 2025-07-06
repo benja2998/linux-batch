@@ -1,0 +1,197 @@
+#!/bin/bash
+
+cd "$(dirname "$0")"
+
+# ANSI escape codes for colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+RESET='\033[0m'
+
+# ANSI escape codes for deleting previous lines
+CURSOR_UP='\033[1A'
+ERASE_LINE='\033[2K'
+
+linux_batch_arch="32"
+
+banner="""
+██╗     ██╗███╗   ██╗██╗   ██╗██╗  ██╗     ██████╗  █████╗ ████████╗ ██████╗██╗  ██╗
+██║     ██║████╗  ██║██║   ██║╚██╗██╔╝     ██╔══██╗██╔══██╗╚══██╔══╝██╔════╝██║  ██║
+██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝█████╗██████╔╝███████║   ██║   ██║     ███████║
+██║     ██║██║╚██╗██║██║   ██║ ██╔██╗╚════╝██╔══██╗██╔══██║   ██║   ██║     ██╔══██║
+███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗     ██████╔╝██║  ██║   ██║   ╚██████╗██║  ██║
+╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝
+
+This program is free software, you may redistribute under the terms of the GPL-3.0 
+or later.
+Although this is distributed in the hopes that it will be useful, it is provided 
+without any warranty; 
+without even the implied warranty of merchantability or fitness for a particular 
+purpose.
+
+"""
+
+# Display an animation of colors in the banner
+colors=("$RED" "$GREEN" "$YELLOW" "$BLUE")
+IFS=$'\n' read -rd '' -a banner_lines <<<"$banner"
+num_lines=${#banner_lines[@]}
+duration=5
+interval=0.3
+frames=$(echo "$duration / $interval" | bc)
+
+for ((frame=0; frame<frames; frame++)); do
+    for ((i=0; i<num_lines; i++)); do
+        color_index=$(( (frame + i) % ${#colors[@]} ))
+        echo -ne "${colors[$color_index]}${banner_lines[i]}${RESET}\n"
+    done
+    sleep $interval
+    # Move cursor up to start of banner to overwrite in next frame
+    echo -ne "\033[${num_lines}A"
+done
+
+# Move cursor down to bottom of banner and clear screen after animation ends
+echo -ne "\033[${num_lines}B"
+
+echo -e """${BLUE}
+###############################
+#                             #
+#      CHECK WINE PREFIX      #
+#                             #
+###############################
+${RESET}"""
+
+# Check if ~/.wine exists
+if [ -d "$HOME/.wine" ]; then
+    echo -e "${GREEN}~/.wine exists.${RESET}"
+else
+    echo -e "${RED}~/.wine doesn't exist.${RESET}"
+    exit 1
+fi
+
+# Check wine prefix architecture
+
+explorer_metadata="$(file ~/.wine/drive_c/windows/explorer.exe)"
+
+if echo "$explorer_metadata" | grep -q "x86-64"; then
+    linux_batch_arch="64"
+    echo -e "Wine prefix is 64-bit."
+else
+    echo -e "Wine prefix is 32-bit."
+fi
+
+echo -e """${BLUE}
+###############################
+#                             #
+#   DOWNLOADING REACTOS ISO   #
+#                             #
+###############################
+${RESET}"""
+
+iso_download="https://iso.reactos.org/livecd/reactos-livecd-0.4.16-dev-1481-ga753f34-x86-msvc-win-dbg.7z" # Default
+
+if [ "$linux_batch_arch" = "64" ]; then
+    iso_download="https://iso.reactos.org/livecd/reactos-livecd-0.4.16-dev-1481-ga753f34-x64-msvc-win-dbg.7z"
+    iso32bit_isodownload="https://iso.reactos.org/livecd/reactos-livecd-0.4.16-dev-1481-ga753f34-x86-msvc-win-dbg.7z"
+elif [ "$linux_batch_arch" = "32" ]; then
+    iso_download="https://iso.reactos.org/livecd/reactos-livecd-0.4.16-dev-1481-ga753f34-x86-msvc-win-dbg.7z"
+fi
+
+curl -# -o reactos.7z "$iso_download"
+curl -# -o reactos-32.7z "$iso32bit_isodownload"
+
+echo -e """${BLUE}
+###############################
+#                             #
+#    UNZIPPING REACTOS ISO    #
+#                             #
+###############################
+${RESET}"""
+
+rm -rf ./reactos
+rm -rf ./reactos-32
+
+echo -e "${GREEN}Unzipping ReactOS 7-zip file...${RESET}"
+
+7z x reactos.7z -oreactos > /dev/null
+7z x reactos-32.7z -oreactos-32 > /dev/null
+
+echo -e "${GREEN}Extracting ReactOS ISO...${RESET}"
+
+7z x reactos/*.iso -oreactos/reactos > /dev/null
+7z x reactos-32/*.iso -oreactos-32/reactos > /dev/null
+
+echo -e "${GREEN}Cleaning up...${RESET}"
+
+rm -rf reactos.7z
+rm -rf reactos-32.7z
+rm -rf reactos/*.iso
+rm -rf reactos-32/*.iso
+
+echo -e """${BLUE}
+###############################
+#                             #
+#        COPYING FILES        #
+#                             #
+###############################
+${RESET}"""
+
+reactos_systemroot="./reactos/reactos/reactos"
+reactos_systemroot_32="./reactos-32/reactos/reactos"
+
+# Replace the broken cmd.exe with the ReactOS one
+cp -f "$reactos_systemroot/system32/cmd.exe" "$HOME/.wine/drive_c/windows/system32/"
+cp -f "$reactos_systemroot_32/system32/cmd.exe" "$HOME/.wine/drive_c/windows/syswow64/"
+
+# Files to copy
+files=(
+    "xcopy.exe"
+    "vbscript.dll"
+    "wscript.exe"
+    "timeout.exe"
+    "subst.exe"
+    "tree.com"
+    "sort.exe"
+    "findstr.exe"
+    "expand.exe"
+    "format.com"
+    "fsutil.exe"
+    "find.exe"
+    "hostname.exe"
+    "mshta.exe"
+    "ping.exe"
+)
+
+# Copy specific files to system32
+for file in "${files[@]}"; do
+    cp -f "$reactos_systemroot/system32/$file" "$HOME/.wine/drive_c/windows/system32/"
+done
+
+# Copy all files from system32 individually
+find "$reactos_systemroot/system32" -maxdepth 1 -type f | while read -r file; do
+    cp --update=none "$file" "$HOME/.wine/drive_c/windows/system32/"
+done
+
+# Copy all files from root of ReactOS dir individually
+find "$reactos_systemroot" -maxdepth 1 -type f | while read -r file; do
+    cp --update=none "$file" "$HOME/.wine/drive_c/windows/"
+done
+
+# If 64-bit Wine prefix, copy 32-bit equivalents to syswow64
+if [ "$linux_batch_arch" = "64" ]; then
+    for file in "${files[@]}"; do
+        cp -f "$reactos_systemroot_32/system32/$file" "$HOME/.wine/drive_c/windows/syswow64/"
+    done
+
+    find "$reactos_systemroot_32/system32" -maxdepth 1 -type f | while read -r file; do
+        cp --update=none "$file" "$HOME/.wine/drive_c/windows/syswow64/"
+    done
+fi
+
+echo -e """${BLUE}
+###############################
+#                             #
+#          FINISHED           #
+#                             #
+###############################
+${RESET}"""

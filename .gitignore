@@ -1,0 +1,16 @@
+*.exe
+*.dylib
+*.cache
+*.tmp
+*.dll
+*.out
+*.so
+*.iso
+*.iso.*
+reactos/
+*.7z
+*.rar
+*.gz
+*.tar
+*.tar.*
+*.com

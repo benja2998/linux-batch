@@ -118,7 +118,7 @@ echo -e "${GREEN}Unzipping ReactOS 7-zip file...${RESET}"
 
 7z x reactos.7z -oreactos > /dev/null
 if [ "$linux_batch_arch" = "64" ]; then
-	7z x reactos-32.7z -oreactos > /dev/null
+	7z x reactos-32.7z -oreactos-32 > /dev/null
 fi
 
 echo -e "${GREEN}Extracting ReactOS ISO...${RESET}"

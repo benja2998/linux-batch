@@ -23,7 +23,7 @@ banner="""
 ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗     ██████╔╝██║  ██║   ██║   ╚██████╗██║  ██║
 ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝
 
-This program is free software, you may redistribute under the terms of the GPL-3.0 
+This program is free software, you may redistribute under the terms of the LGPL-3.0 
 or later.
 Although this is distributed in the hopes that it will be useful, it is provided 
 without any warranty; 

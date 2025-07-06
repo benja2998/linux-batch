@@ -207,9 +207,9 @@ ${RESET}"""
 curl -# -o install_pwshwrapper.exe \
   https://raw.githubusercontent.com/PietJankbal/powershell-wrapper-for-wine/master/install_pwshwrapper.exe
 
-wine-stable install_pwshwrapper.exe
+wine install_pwshwrapper.exe
 
-wine-stable powershell # Required to finish pwshwrapper setup
+wine powershell # Required to finish pwshwrapper setup
 
 echo -e """${BLUE}
 ###############################

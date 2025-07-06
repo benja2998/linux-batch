@@ -10,7 +10,7 @@ You can just run `linux-batch`:
 bash linux-batch
 ```
 
-If you're on Termux, you need to use [Box64Droid](https://github.com/Ilya114/Box64Droid).
+Android is not supported.
 
 ## How it works
 

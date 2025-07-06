@@ -10,6 +10,12 @@ You can just run `linux-batch`:
 bash linux-batch
 ```
 
+If you're on Termux, apply the `termux.patch` patch before running the script:
+
+```bash
+git apply termux.patch
+```
+
 ## How it works
 
 `linux-batch` downloads the ReactOS ISO and automatically copies the `cmd.exe` and associated files to your Wine prefix.

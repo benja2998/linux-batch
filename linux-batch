@@ -201,6 +201,8 @@ curl -# -o install_pwshwrapper.exe \
 
 wine install_pwshwrapper.exe
 
+wine powershell # Required to finish pwshwrapper setup
+
 echo -e """${BLUE}
 ###############################
 #                             #

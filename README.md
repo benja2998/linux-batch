@@ -10,11 +10,7 @@ You can just run `linux-batch`:
 bash linux-batch
 ```
 
-If you're on Termux, apply the `termux.patch` patch before running the script:
-
-```bash
-git apply termux.patch
-```
+If you're on Termux, you need to use [Box64Droid](https://github.com/Ilya114/Box64Droid).
 
 ## How it works
 

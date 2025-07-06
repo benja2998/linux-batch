@@ -98,7 +98,10 @@ elif [ "$linux_batch_arch" = "32" ]; then
 fi
 
 curl -# -o reactos.7z "$iso_download"
-curl -# -o reactos-32.7z "$iso32bit_isodownload"
+
+if [ "$linux_batch_arch" = "64" ]; then
+	curl -# -o reactos-32.7z "$iso32bit_isodownload"
+fi
 
 echo -e """${BLUE}
 ###############################
@@ -114,12 +117,16 @@ rm -rf ./reactos-32
 echo -e "${GREEN}Unzipping ReactOS 7-zip file...${RESET}"
 
 7z x reactos.7z -oreactos > /dev/null
-7z x reactos-32.7z -oreactos-32 > /dev/null
+if [ "$linux_batch_arch" = "64" ]; then
+	7z x reactos-32.7z -oreactos > /dev/null
+fi
 
 echo -e "${GREEN}Extracting ReactOS ISO...${RESET}"
 
 7z x reactos/*.iso -oreactos/reactos > /dev/null
-7z x reactos-32/*.iso -oreactos-32/reactos > /dev/null
+if [ "$linux_batch_arch" = "64" ]; then
+	7z x reactos-32/*.iso -oreactos-32/reactos > /dev/null
+fi
 
 echo -e "${GREEN}Cleaning up...${RESET}"
 

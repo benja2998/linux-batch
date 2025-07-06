@@ -191,6 +191,18 @@ fi
 echo -e """${BLUE}
 ###############################
 #                             #
+#    SETTING UP WINDOWS PS    #
+#                             #
+###############################
+${RESET}"""
+
+curl -# -o install_pwshwrapper.exe https://github.com/PietJankbal/powershell-wrapper-for-wine/raw/master/install_pwshwrapper.exe
+
+wine install_pwshwrapper.exe
+
+echo -e """${BLUE}
+###############################
+#                             #
 #          FINISHED           #
 #                             #
 ###############################
